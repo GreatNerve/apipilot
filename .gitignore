@@ -1,0 +1,8 @@
+target/
+.idea/
+*.iml
+.vscode/
+no-push/
+
+# Frontend export copied in for local full-stack runs
+backend/src/main/resources/static/

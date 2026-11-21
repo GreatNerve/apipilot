@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: apipilot
+  datasource:
+    # Testcontainers starts a throwaway Postgres for the test run; Docker must be running.
+    url: jdbc:tc:postgresql:18-alpine:///apipilot
+  mvc:
+    problemdetails:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      base-path: /api
+      exposure:
+        include: health
+
+springdoc:
+  api-docs:
+    path: /api/openapi
+  default-produces-media-type: application/json
+
+logging:
+  level:
+    # Import failures are reported to the caller; the parser's own stack traces add nothing.
+    io.swagger.v3.parser: "OFF"
+    io.swagger.parser: "OFF"
+    # We wrap schemas in a document that carries "components"; that keyword is expected.
+    com.networknt.schema.keyword.UnknownKeywordFactory: ERROR

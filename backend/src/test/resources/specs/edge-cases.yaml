@@ -1,0 +1,101 @@
+openapi: 3.1.0
+info:
+  title: Edge Cases
+  version: "1"
+security:
+  - bearer: []
+paths:
+  /nodes/{nodeId}:
+    parameters:
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Trace
+        in: header
+        schema:
+          type: string
+    get:
+      responses:
+        "200":
+          description: A tree node that contains nodes of the same type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+    put:
+      operationId: replaceNode
+      parameters:
+        - name: X-Trace
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              type: string
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Shape"
+      responses:
+        "200":
+          description: ok
+  /status:
+    get:
+      operationId: getStatus
+      security: []
+      responses:
+        "200":
+          description: ok
+          content:
+            text/plain:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  schemas:
+    Node:
+      type: object
+      properties:
+        label:
+          type: [string, "null"]
+        parent:
+          $ref: "#/components/schemas/Node"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Node"
+    Shape:
+      oneOf:
+        - $ref: "#/components/schemas/Circle"
+        - $ref: "#/components/schemas/Square"
+    Named:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    Circle:
+      allOf:
+        - $ref: "#/components/schemas/Named"
+        - type: object
+          required: [radius]
+          properties:
+            radius:
+              type: number
+              exclusiveMinimum: 0
+    Square:
+      allOf:
+        - $ref: "#/components/schemas/Named"
+        - type: object
+          required: [side]
+          properties:
+            side:
+              type: number

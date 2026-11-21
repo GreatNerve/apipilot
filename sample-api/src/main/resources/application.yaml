@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: sample-api
+
+server:
+  port: 8090
+
+springdoc:
+  default-produces-media-type: application/json

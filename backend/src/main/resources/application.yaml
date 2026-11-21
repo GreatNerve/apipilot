@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: apipilot
+  datasource:
+    # The Docker image starts its own Postgres and sets this; set it yourself to use another one.
+    url: ${APIPILOT_DB_URL:jdbc:postgresql://localhost:5432/apipilot}
+    username: ${APIPILOT_DB_USER:apipilot}
+    password: ${APIPILOT_DB_PASSWORD:apipilot}
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  # Local-only by default; the Docker image overrides this with SERVER_ADDRESS=0.0.0.0.
+  address: 127.0.0.1
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      base-path: /api
+      exposure:
+        include: health
+
+springdoc:
+  api-docs:
+    path: /api/openapi
+  default-produces-media-type: application/json
+
+logging:
+  level:
+    # Import failures are reported to the caller; the parser's own stack traces add nothing.
+    io.swagger.v3.parser: "OFF"
+    io.swagger.parser: "OFF"
+    # We wrap schemas in a document that carries "components"; that keyword is expected.
+    com.networknt.schema.keyword.UnknownKeywordFactory: ERROR

@@ -1,0 +1,15 @@
+# Postgres for local development: docker compose up -d
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: apipilot
+      POSTGRES_PASSWORD: apipilot
+      POSTGRES_DB: apipilot
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - apipilot-db:/var/lib/postgresql
+
+volumes:
+  apipilot-db:

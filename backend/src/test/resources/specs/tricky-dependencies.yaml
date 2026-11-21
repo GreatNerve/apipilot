@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: Tricky dependencies
+  version: "1"
+paths:
+  # teams and users reference each other; only users -> teams is mandatory.
+  /teams:
+    post:
+      operationId: createTeam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+                leaderUserId: { type: string }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Entity" }
+  /teams/{teamId}:
+    get:
+      operationId: getTeam
+      parameters:
+        - { name: teamId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: ok }
+  /users:
+    post:
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [teamId, ownerId]
+              properties:
+                teamId: { type: string }
+                ownerId: { type: string }
+                userId: { type: string }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Entity" }
+  /users/{userId}:
+    delete:
+      operationId: deleteUser
+      parameters:
+        - { name: userId, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: gone }
+  # The account key is only announced through an OpenAPI link.
+  /signup:
+    post:
+      operationId: signup
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key: { type: string }
+          links:
+            account:
+              operationId: getAccount
+              parameters:
+                accountKey: $response.body#/key
+  /accounts/{accountKey}:
+    get:
+      operationId: getAccount
+      parameters:
+        - { name: accountKey, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: ok }
+  # Nothing in the spec produces a value for this parameter.
+  /reports/{reportCode}:
+    get:
+      operationId: getReport
+      parameters:
+        - { name: reportCode, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: ok }
+components:
+  schemas:
+    Entity:
+      type: object
+      properties:
+        id: { type: string }
